@@ -55,23 +55,68 @@ const AdminDashboard = () => {
     }
   };
 
-  const columns = [
-    { title: 'HỌ VÀ TÊN', render: (_, r) => <b style={{color: '#1890ff'}}>{`${r.lastName} ${r.firstName}`}</b> },
-    { title: 'CCCD', dataIndex: 'cccd', key: 'cccd' },
-    { title: 'XEM ẢNH', dataIndex: 'fileUrl', render: (url) => <Image src={url} width={80} style={{borderRadius: 4}} /> },
-    { title: 'TÊN FILE', dataIndex: 'fileName', key: 'fileName', size: 'small' },
-    {
-      title: 'HÀNH ĐỘNG',
-      render: (_, record) => (
-        <Space>
-          <Button type="link" icon={<DownloadOutlined />} onClick={() => downloadSingle(record.fileUrl, record.fileName)}>Tải</Button>
-          <Popconfirm title="Xóa dữ liệu này?" onConfirm={() => deleteDoc(doc(db, "user_uploads", record.id))}>
-            <Button type="link" danger icon={<DeleteOutlined />}>Xóa</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  // Tìm đến biến columns trong AdminDashboard.jsx và sửa lại như sau:
+
+const columns = [
+  {
+    title: 'STT',
+    key: 'stt',
+    width: 60,
+    align: 'center',
+    render: (text, record, index) => (
+      <span style={{ fontWeight: 'bold', color: '#8c8c8c' }}>{index + 1}</span>
+    ),
+  },
+  { 
+    title: 'HỌ VÀ TÊN', 
+    render: (_, r) => <b style={{ color: '#1890ff' }}>{`${r.lastName} ${r.firstName}`}</b> 
+  },
+  { 
+    title: 'CCCD', 
+    dataIndex: 'cccd', 
+    key: 'cccd' 
+  },
+  { 
+    title: 'XEM ẢNH', 
+    dataIndex: 'fileUrl', 
+    render: (url) => (
+      <Image 
+        src={url} 
+        width={80} 
+        style={{ borderRadius: 4, border: '1px solid #f0f0f0' }} 
+      />
+    ) 
+  },
+  { 
+    title: 'TÊN FILE', 
+    dataIndex: 'fileName', 
+    key: 'fileName',
+    ellipsis: true, // Nếu tên file quá dài sẽ tự hiển thị dấu ...
+  },
+  {
+    title: 'HÀNH ĐỘNG',
+    align: 'center',
+    render: (_, record) => (
+      <Space>
+        <Button 
+          type="link" 
+          icon={<DownloadOutlined />} 
+          onClick={() => downloadSingle(record.fileUrl, record.fileName)}
+        >
+          Tải
+        </Button>
+        <Popconfirm 
+          title="Xóa dữ liệu này?" 
+          onConfirm={() => deleteDoc(doc(db, "user_uploads", record.id))}
+          okText="Xóa"
+          cancelText="Hủy"
+        >
+          <Button type="link" danger icon={<DeleteOutlined />}>Xóa</Button>
+        </Popconfirm>
+      </Space>
+    ),
+  },
+];
 
   return (
     <div style={{ padding: '30px' }}>

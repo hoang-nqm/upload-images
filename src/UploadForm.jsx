@@ -15,53 +15,58 @@ const UploadForm = () => {
   const UPLOAD_PRESET = "upload_images"; // Nhớ thay preset của bạn
 
   const onFinish = async (values) => {
-    if (fileList.length === 0) return message.error("Vui lòng chọn ảnh!");
+  if (fileList.length === 0) return message.error("Vui lòng chọn ảnh!");
 
-    const fileObj = fileList[0].originFileObj || fileList[0];
-    setLoading(true);
+  const fileObj = fileList[0].originFileObj || fileList[0];
+  setLoading(true);
 
-    try {
-      // VIẾT HOA TẤT CẢ TÊN
-      const firstName = values.firstName.toUpperCase().trim();
-      const lastName = values.lastName.toUpperCase().trim();
-      const cccd = values.cccd.trim();
-      
-      const extension = fileObj.name.split('.').pop();
-      const dateFolder = new Date().toISOString().split('T')[0];
-      const customFileName = `${firstName} + ${lastName}_${cccd}`;
+  try {
+    const firstName = values.firstName.toUpperCase().trim();
+    const lastName = values.lastName.toUpperCase().trim();
+    const cccd = values.cccd.trim();
+    
+    const extension = fileObj.name.split('.').pop();
+    const dateFolder = new Date().toISOString().split('T')[0];
+    
+    // Tên chuẩn bạn muốn (Dùng để tải về)
+    const baseFileName = `${firstName} + ${lastName}_${cccd}`;
 
-      const formData = new FormData();
-      formData.append("file", fileObj);
-      formData.append("upload_preset", UPLOAD_PRESET);
-      formData.append("public_id", customFileName); 
-      formData.append("folder", `uploads/${dateFolder}`);
+    // Tên định danh DUY NHẤT để gửi lên Cloudinary (Thêm timestamp để tránh lỗi Overwrite)
+    const uniquePublicId = `${baseFileName}_${Date.now()}`;
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method: "POST",
-        body: formData
-      });
-      const data = await response.json();
+    const formData = new FormData();
+    formData.append("file", fileObj);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("public_id", uniquePublicId); // Gửi tên có timestamp
+    formData.append("folder", `uploads/${dateFolder}`);
 
-      if (data.error) throw new Error(data.error.message);
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
 
-      await addDoc(collection(db, "user_uploads"), {
-        firstName,
-        lastName,
-        cccd,
-        fileName: `${customFileName}.${extension}`,
-        fileUrl: data.secure_url,
-        createdAt: serverTimestamp(),
-      });
+    if (data.error) throw new Error(data.error.message);
 
-      message.success("Gửi thông tin thành công!");
-      form.resetFields();
-      setFileList([]);
-    } catch (error) {
-      message.error("Lỗi: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // LƯU VÀO FIRESTORE
+    await addDoc(collection(db, "user_uploads"), {
+      firstName,
+      lastName,
+      cccd,
+      fileName: `${baseFileName}.${extension}`, // Lưu tên CHUẨN (không có timestamp)
+      fileUrl: data.secure_url, // Link ảnh mới nhất
+      createdAt: serverTimestamp(),
+    });
+
+    message.success("Gửi thông tin thành công!");
+    form.resetFields();
+    setFileList([]);
+  } catch (error) {
+    message.error("Lỗi: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{ 

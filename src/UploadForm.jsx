@@ -29,7 +29,7 @@ const UploadForm = () => {
     const dateFolder = new Date().toISOString().split('T')[0];
     
     // Tên chuẩn bạn muốn (Dùng để tải về)
-    const baseFileName = `${firstName} + ${lastName}_${cccd}`;
+    const baseFileName = `${lastName} ${firstName}_${cccd}`;
 
     // Tên định danh DUY NHẤT để gửi lên Cloudinary (Thêm timestamp để tránh lỗi Overwrite)
     const uniquePublicId = `${baseFileName}_${Date.now()}`;

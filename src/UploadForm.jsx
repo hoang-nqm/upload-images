@@ -93,7 +93,7 @@ const UploadForm = () => {
             label="Năm sinh" name="cccd" 
             rules={[{ required: true }]}
           >
-            <Input prefix={<IdcardOutlined style={{color: '#bfbfbf'}} />} placeholder="12 chữ số" maxLength={12} />
+            <Input prefix={<IdcardOutlined style={{color: '#bfbfbf'}} />} placeholder="4 chữ số" maxLength={12} />
           </Form.Item>
 
           <Form.Item label="ẢNH CHỤP FACEID">

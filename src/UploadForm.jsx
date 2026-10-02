@@ -90,8 +90,8 @@ const UploadForm = () => {
           </Form.Item>
 
           <Form.Item 
-            label="SỐ CCCD" name="cccd" 
-            rules={[{ required: true, pattern: /^\d{12}$/, message: 'CCCD phải đúng 12 số!' }]}
+            label="Năm sinh" name="cccd" 
+            rules={[{ required: true, message: 'CCCD phải đúng 12 số!' }]}
           >
             <Input prefix={<IdcardOutlined style={{color: '#bfbfbf'}} />} placeholder="12 chữ số" maxLength={12} />
           </Form.Item>
